@@ -13,11 +13,14 @@ import { Reveal } from "@/components/ui/Reveal";
  */
 export function ShopCtaBanner() {
   return (
-    <section className="relative flex aspect-[4/5] items-center overflow-hidden bg-cream md:aspect-video lg:aspect-auto lg:h-[560px] lg:max-h-[600px] lg:min-h-[460px]">
+    <section className="relative flex aspect-[1/1] items-center overflow-hidden bg-cream md:aspect-video lg:aspect-auto lg:h-[560px] lg:max-h-[600px] lg:min-h-[460px]">
       {/*
-        mobile: right-biased crop keeps the model and her hair fully in
-          frame (the clean wall doesn't survive a tall crop of this wide
-          a source image)
+        Her face sits at roughly 63-75% across this photo, with the clean
+        wall from ~0-54%. At the tall 4:5 crop this used to be on mobile,
+        only ~43% of the width survives — her face then lands around
+        60-87% of the *container* width, squarely under the heading.
+        A squarer 1:1 crop (~53% of the width survives) plus pushing the
+        text column narrower gives her face a clear ~65%+ margin instead.
         tablet (md): ~native aspect ratio, so the full composition shows
         desktop (lg+): only mild vertical crop at this ratio, so the clean
           left wall stays fully available for the copy
@@ -28,7 +31,7 @@ export function ShopCtaBanner() {
         fill
         sizes="100vw"
         quality={90}
-        className="object-cover object-[66%_22%] md:object-[54%_28%] lg:object-[38%_18%]"
+        className="object-cover object-[60%_center] md:object-[54%_28%] lg:object-[38%_18%]"
       />
 
       {/* Light, warm wash from the left — this photo's left side is
@@ -36,18 +39,18 @@ export function ShopCtaBanner() {
           guaranteed text contrast rather than darkening anything. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-ivory/75 via-ivory/30 via-40% to-transparent sm:from-ivory/60 sm:via-ivory/15"
+        className="absolute inset-0 bg-gradient-to-r from-ivory/75 via-ivory/35 via-55% to-transparent sm:from-ivory/60 sm:via-ivory/15 sm:via-40%"
       />
 
       <Container className="relative">
-        <Reveal className="max-w-xs sm:max-w-sm lg:max-w-md">
+        <Reveal className="max-w-[210px] sm:max-w-sm lg:max-w-md">
           <p className="mb-4 text-xs font-medium tracking-[0.2em] text-text-muted uppercase">
             Your Perfect Match
           </p>
-          <h2 className="font-display text-4xl leading-[1.1] font-normal text-balance text-text sm:text-5xl lg:text-6xl">
+          <h2 className="font-display text-3xl leading-[1.1] font-normal text-balance text-text sm:text-5xl lg:text-6xl">
             Ready for your best hair yet?
           </h2>
-          <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-text-muted">
+          <p className="mt-5 max-w-[210px] text-[15px] leading-relaxed text-text-muted sm:max-w-sm">
             Find your ideal shade, length and method — thoughtfully designed to blend
             beautifully into your everyday life.
           </p>

@@ -14,11 +14,19 @@ import { Reveal } from "@/components/ui/Reveal";
  */
 export function ImmersiveEditorial() {
   return (
-    <section className="relative flex aspect-[4/5] items-center overflow-hidden bg-cream md:aspect-video lg:aspect-auto lg:h-[75vh] lg:max-h-[760px] lg:min-h-[560px]">
+    <section className="relative flex aspect-[1/1] items-center overflow-hidden bg-cream md:aspect-video lg:aspect-auto lg:h-[75vh] lg:max-h-[760px] lg:min-h-[560px]">
       {/*
-        Single source image, art-directed per breakpoint via object-position:
-        - mobile: right-biased crop keeping two of the three women in frame
-          (the full width doesn't fit a tall mobile crop)
+        Single source image, art-directed per breakpoint via object-position.
+        All three women sit in the right ~52-86% of this photo, with a
+        clean window/wall area on the left ~0-46% — that clean band is
+        what the copy sits in at every breakpoint, sized so a real margin
+        of it stays visible after cropping (not just a sliver a face can
+        end up crossing into):
+        - mobile: a squarer 1:1 crop (vs. the taller 4:5 this used to be)
+          keeps enough source width in frame — at 4:5 only ~45% of the
+          width survives the crop, not enough room for the whole group
+          plus a text-safe margin without a face landing under a line of
+          copy; at 1:1 (~56% of the width) it fits
         - tablet (md): ~native aspect ratio, so the full composition shows
         - desktop (lg+): left-biased, preserving the clean window/wall area
           on the left for the copy to sit in without crossing any face
@@ -29,7 +37,7 @@ export function ImmersiveEditorial() {
         fill
         sizes="100vw"
         quality={90}
-        className="object-cover object-[70%_26%] md:object-[50%_35%] lg:object-[36%_26%] xl:object-[32%_22%]"
+        className="object-cover object-[73%_center] md:object-[50%_35%] lg:object-[36%_26%] xl:object-[32%_22%]"
       />
 
       {/* Warm, localized scrim from the left only — never a flat overlay

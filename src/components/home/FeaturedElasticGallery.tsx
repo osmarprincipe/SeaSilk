@@ -25,8 +25,18 @@ const COUNT = cards.length;
 export function FeaturedElasticGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  // True only when `goTo` itself changed `activeIndex` (a real hover/click/
+  // keyboard nav) — never on mount. A "was this the first render" ref
+  // isn't enough here: React's Strict Mode runs mount effects twice in
+  // development (mount → cleanup → mount again), so a flag that just
+  // gets consumed once still leaves the *second* invocation free to fire.
+  // Tying the scroll to the action that requested it, instead of to how
+  // many times the effect has run, is correct regardless of how many
+  // times mount replays.
+  const shouldScrollOnChange = useRef(false);
 
   const goTo = useCallback((index: number) => {
+    shouldScrollOnChange.current = true;
     setActiveIndex(((index % COUNT) + COUNT) % COUNT);
   }, []);
 
@@ -35,6 +45,8 @@ export function FeaturedElasticGallery() {
   // the scroll edge (matters for tap/keyboard nav; hover only fires for
   // cards already visible, so this is a no-op there).
   useEffect(() => {
+    if (!shouldScrollOnChange.current) return;
+    shouldScrollOnChange.current = false;
     cardRefs.current[activeIndex]?.scrollIntoView({
       behavior: "smooth",
       inline: "center",
@@ -75,7 +87,7 @@ export function FeaturedElasticGallery() {
           aria-roledescription="carousel"
           aria-label="Featured products, use left and right arrow keys to browse"
           onKeyDown={handleKeyDown}
-          className="mt-10 flex h-[280px] items-stretch gap-2 overflow-x-auto sm:mt-12 sm:h-[380px] sm:gap-3 lg:h-[500px] lg:gap-3.5"
+          className="scrollbar-refined mt-10 flex h-[280px] items-stretch gap-2 overflow-x-auto sm:mt-12 sm:h-[380px] sm:gap-3 lg:h-[500px] lg:gap-3.5"
         >
           {cards.map((card, index) => {
             const isActive = index === activeIndex;

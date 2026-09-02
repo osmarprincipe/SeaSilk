@@ -19,7 +19,7 @@ export function CollectionsSection() {
           />
         </Reveal>
 
-        <div className="hover-reveal-group mt-10 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:mt-12 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0">
+        <div className="hover-reveal-group scrollbar-refined mt-10 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:mt-12 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0">
           {collections.map((collection) => (
             <CollectionCard key={collection.id} collection={collection} />
           ))}

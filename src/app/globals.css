@@ -146,17 +146,20 @@ body {
   }
 }
 
-/* New Arrivals marquee: a seamless, continuous right-to-left loop built
-   from one CSS keyframe animation — no JS animation loop. The product
-   list is rendered twice; translateX(-50%) shifts the track by exactly
-   one copy's width (each item's own trailing margin — not a flex `gap` —
-   carries the spacing, so the two halves are always exactly equal width
-   and the loop point never stutters). The second copy is presentation
-   only: aria-hidden and pulled out of tab order so keyboard/AT users see
-   one accessible product list, not a duplicated one. Hovering or
-   focusing anywhere in the track pauses it in place; reduced-motion
-   users get the plain, always-visible grid instead — no animation, no
-   duplication. */
+/* New Arrivals marquee: a seamless, continuous right-to-left loop.
+   Autoplay and drag/swipe are both driven from JS (ProductMarquee.tsx)
+   via requestAnimationFrame writing `transform: translateX(...)`
+   directly to .marquee-track — no CSS @keyframes animation, so hover
+   never has anything to pause. The product list is rendered twice; the
+   track is translated by up to one copy's width (each item's own
+   trailing margin — not a flex `gap` — carries the spacing, so the two
+   halves are always exactly equal width and the loop point never
+   stutters). The second copy is presentation only: aria-hidden and
+   pulled out of tab order so keyboard/AT users see one accessible
+   product list, not a duplicated one. Only an active drag/swipe pauses
+   autoplay (handled in JS, not here) — hover and keyboard focus never
+   do. Reduced-motion users get the plain, always-visible grid instead —
+   no animation, no duplication. */
 .marquee-static {
   display: none;
 }
@@ -165,23 +168,47 @@ body {
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
   mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  cursor: grab;
+  touch-action: pan-y;
 }
 
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 145s linear infinite;
+  will-change: transform;
 }
 
-.marquee-track:hover,
-.marquee-track:focus-within {
-  animation-play-state: paused;
+.marquee-track.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .marquee-item {
   flex-shrink: 0;
   width: 250px;
   margin-right: 1.25rem;
+}
+
+/* Cards are real links, which the browser defaults to a pointer cursor —
+   override it so the grab affordance is visible over the whole carousel,
+   not just the thin gaps between cards. The image itself (the link's
+   first child) is the one clickable surface that should still read as
+   "opens the product", so it keeps the normal pointer cursor; the name/
+   shade/price block underneath (the second child) reads as "grab" like
+   the rest of the track. While an actual drag is in progress, grabbing
+   wins everywhere, including over the image. */
+.marquee-item a {
+  cursor: grab;
+}
+
+.marquee-item a > div:first-child {
+  cursor: pointer;
+}
+
+.marquee-track.is-dragging .marquee-item a,
+.marquee-track.is-dragging .marquee-item a > div:first-child {
+  cursor: grabbing;
 }
 
 @media (min-width: 640px) {
@@ -198,15 +225,6 @@ body {
   }
 }
 
-@keyframes marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .marquee-viewport {
     display: none;
@@ -215,6 +233,61 @@ body {
   .marquee-static {
     display: grid;
   }
+}
+
+/* Slim, low-contrast horizontal scrollbar for native overflow-x rows
+   (Collections' mobile strip, the Featured Products elastic gallery) —
+   replaces the heavy browser default with something that reads as part
+   of the SeaSilk palette instead of OS chrome. Purely cosmetic: doesn't
+   touch scroll behavior, so wheel/touch/drag scrolling is untouched. */
+.scrollbar-refined {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-taupe) transparent;
+}
+
+.scrollbar-refined::-webkit-scrollbar {
+  height: 5px;
+  background: transparent;
+}
+
+/* Belt-and-suspenders against the left/right arrow buttons some Windows
+   Chrome/Edge builds still render on a "classic" (non-overlay) scrollbar:
+   the blanket rule handles most engines, but a few older WebKit builds
+   only fully drop the buttons when each :start/:end/:decrement/:increment
+   combination is targeted individually too. */
+.scrollbar-refined::-webkit-scrollbar-button,
+.scrollbar-refined::-webkit-scrollbar-button:horizontal:start:decrement,
+.scrollbar-refined::-webkit-scrollbar-button:horizontal:end:increment,
+.scrollbar-refined::-webkit-scrollbar-button:horizontal:start:increment,
+.scrollbar-refined::-webkit-scrollbar-button:horizontal:end:decrement {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.scrollbar-refined::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.scrollbar-refined::-webkit-scrollbar-track {
+  background: rgba(230, 214, 195, 0.35); /* --color-sand, low-contrast */
+  border-radius: 999px;
+}
+
+.scrollbar-refined::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+
+.scrollbar-refined::-webkit-scrollbar-thumb {
+  background-color: rgba(140, 119, 104, 0.55); /* --color-taupe */
+  border-radius: 999px;
+  border: none;
+  box-shadow: none;
+  transition: background-color 0.2s ease-out;
+}
+
+.scrollbar-refined::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 74, 54, 0.75); /* --color-brown */
 }
 
 a,

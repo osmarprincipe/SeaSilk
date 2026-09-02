@@ -60,22 +60,7 @@ export function AboutSection() {
             ))}
           </div>
 
-          {/*
-            PLACEHOLDER STATISTIC — not a verified figure. Replace "98%"
-            and the supporting line with real, sourced customer data
-            before this site goes to production.
-          */}
-          <div className="mt-7 flex items-start gap-5 rounded-2xl border border-sand bg-bg/70 px-6 py-5">
-            <span className="font-display shrink-0 text-4xl leading-none text-espresso">98%</span>
-            <div>
-              <p className="text-sm leading-snug text-text">
-                of women say SeaSilk blends seamlessly and feels like their own hair.
-              </p>
-              <p className="mt-1.5 text-[11px] text-text-muted">*Based on customer feedback.</p>
-            </div>
-          </div>
-
-          <div className="mt-8">
+          <div className="mt-9">
             <Button href="/about" variant="primary" showArrow>
               Discover Our Story
             </Button>
