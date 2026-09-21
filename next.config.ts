@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Optional isolated output for validation when OneDrive locks the dev cache.
+  distDir: process.env.SEASILK_BUILD_DIR || ".next",
   images: {
     remotePatterns: [
       {

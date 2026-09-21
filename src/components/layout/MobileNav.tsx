@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
-import { CloseIcon, InstagramIcon, TiktokIcon, UserIcon } from "@/components/icons";
+import { useEffect, useRef } from "react";
+import {
+  CloseIcon,
+  InstagramIcon,
+  TiktokIcon,
+  UserIcon,
+} from "@/components/icons";
 
 const links = [
   { label: "Shop", href: "/shop" },
@@ -16,18 +21,50 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ open, onClose }: MobileNavProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
+    const panel = panelRef.current;
+    const focusable = () =>
+      Array.from(
+        panel?.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled])",
+        ) ?? [],
+      );
+    focusable()[0]?.focus({ preventScroll: true });
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
     };
-  }, [open]);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [open, onClose]);
 
   return (
     <div
       className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
       aria-hidden={!open}
+      inert={!open}
     >
       <div
         onClick={onClose}
@@ -40,6 +77,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
           open ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
+        ref={panelRef}
         aria-modal="true"
         aria-label="Site menu"
       >
@@ -78,10 +116,20 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
             Account
           </Link>
           <div className="flex items-center gap-4 pt-1 text-text-muted">
-            <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noreferrer">
+            <a
+              href="https://instagram.com"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noreferrer"
+            >
               <InstagramIcon className="size-5" />
             </a>
-            <a href="https://tiktok.com" aria-label="TikTok" target="_blank" rel="noreferrer">
+            <a
+              href="https://tiktok.com"
+              aria-label="TikTok"
+              target="_blank"
+              rel="noreferrer"
+            >
               <TiktokIcon className="size-5" />
             </a>
           </div>

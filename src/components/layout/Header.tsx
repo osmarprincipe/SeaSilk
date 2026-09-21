@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { BagIcon, MenuIcon, SearchIcon, UserIcon } from "@/components/icons";
 import { MobileNav } from "@/components/layout/MobileNav";
 
@@ -12,6 +13,7 @@ const links = [
 ];
 
 export function Header() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -57,7 +59,11 @@ export function Header() {
           >
             <SearchIcon className="size-[19px]" />
           </button>
-          <Link href="/account" aria-label="Account" className="hidden p-1 lg:inline-flex">
+          <Link
+            href="/account"
+            aria-label="Account"
+            className="hidden p-1 lg:inline-flex"
+          >
             <UserIcon className="size-[19px]" />
           </Link>
           <Link href="/cart" aria-label="Cart" className="p-1">
@@ -72,12 +78,21 @@ export function Header() {
         }`}
       >
         <form
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={(event) => {
+            event.preventDefault();
+            const query =
+              new FormData(event.currentTarget).get("q")?.toString().trim() ??
+              "";
+            setSearchOpen(false);
+            router.push(`/search?q=${encodeURIComponent(query)}`);
+          }}
           className="mx-auto flex max-w-[1440px] items-center gap-3 px-5 py-4 sm:px-8 lg:px-12 xl:px-16"
         >
           <SearchIcon className="size-[18px] shrink-0 text-text-muted" />
           <input
             type="search"
+            name="q"
+            disabled={!searchOpen}
             placeholder="Search products"
             aria-label="Search products"
             className="w-full bg-transparent text-sm text-text placeholder:text-text-muted focus:outline-none"
